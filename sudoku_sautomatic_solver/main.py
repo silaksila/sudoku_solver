@@ -4,7 +4,6 @@ from tkinter import filedialog
 import numpy as np
 import time
 import pygame
-import math
 
 from button import button
 from img_processing import img_processing
@@ -275,12 +274,17 @@ def input_blank():
             inputed[i][0].display_user_input()
 
 
+var = True
+
+
 def load_image_to_sudoku():
+    global num, useless_variable, solved, inputed, var
 
     path_img = ''
     # draw_button
-    if load_img_button():
+    if load_img_button() and var:
         # open file browser
+        var = False
         root = tkinter.Tk()
         root.withdraw()  # hide tkinter window
 
@@ -292,14 +296,16 @@ def load_image_to_sudoku():
 
     # process image and get sudoku board from it
     if len(path_img) > 0:
-        img_processing(path_img)
-
-
-countdown = 0
+        brd = img_processing(path_img)
+        # reset variables for new board
+        num = brd
+        solve()
+        useless_variable = 1
+        solved = False
+        inputed = []
 
 
 def load_img_button():
-    global countdown
     load_img_button = button((147, 158, 202), 600, 150,
                              250, 50, text='Load image', r=40)
 
@@ -312,17 +318,8 @@ def load_img_button():
     load_img_button.draw(board)
 
     if load_img_button.isclicked():
-        if countdown == 0:
-            countdown = 100
-            return True
-        # switch so button isnt perma clicked
-        if countdown != 0:
-            countdown -= 1
-            return False
+        return True
     else:
-        # switch so button isnt perma clicked
-        if countdown != 0:
-            countdown -= 1
         return False
 
 
@@ -345,30 +342,31 @@ def solve_butt():
 
 
 def change_board():
-    global board_num, num, useless_variable, solved
+    global board_num, num, useless_variable, solved, inputed
     next_button = button((147, 158, 202), 750, 450, 120, 50, 'skip', r=50)
     if next_button.isOver(pygame.mouse.get_pos()):
         next_button.color = (164, 164, 164)
     else:
         next_button.color = (147, 158, 202)
-
     next_button.draw(board)
 
     if next_button.isclicked():
         time.sleep(0.5)
         if board_num + 1 > len(levels):
             board_num = 0
-
         else:
             board_num += 1
 
+        # reset everything for new board
         num = levels[board_num]
+
         solve()
         useless_variable = 1
         solved = False
+        inputed = []
 
 
-def gmae_over():
+def game_over():
     a = 80
     board.blit(black_x, (40, 530))
     board.blit(black_x, (40 + a, 530))
@@ -385,11 +383,11 @@ def display_game_window():
     board.fill((255, 255, 255))
 
     solve_butt()
+    change_board()
     drawing_play_board()
     drawing_numbers_on_board()
     input_blank()
-    change_board()
-    gmae_over()
+    game_over()
     load_image_to_sudoku()
 
     pygame.display.update()

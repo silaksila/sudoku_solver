@@ -7,7 +7,29 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 custom_tesseract_config = r'--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789'
 
-board = np.zeros((9, 9), dtype=int).tolist()
+board = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+comare_compare = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
 # this function process image nad return board
 
@@ -24,8 +46,10 @@ def img_processing(path):
     lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100,
                             minLineLength=100, maxLineGap=30)
     # remove lines from sudoku
+    #example = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     for i in range(len(lines)):
         for x1, y1, x2, y2 in lines[i]:
+            #cv2.line(example, (x1, y1), (x2, y2), (0, 255, 0), 12)
             cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 12)
 
     img = cv2.GaussianBlur(img, (9, 9), 0)
@@ -43,6 +67,20 @@ def img_processing(path):
             num = re.findall('\d+', num)
             if num:
                 board[y][x] = int(num[0])
-    cv2.imwrite('imgs/test.png', img)
 
-    return board
+    # img = img[0*(img_height//9):(1)*(img_height//9),
+     #         0*(img_weight//9):(1)*(img_weight//9)]
+
+    cv2.imwrite('imgs/test.png', img)
+    cv2.imshow('aa', edges)
+    cv2.waitKey(0)
+
+    if board != comare_compare:
+        print(board)
+        return board
+    else:
+        print('BAD')
+        return False
+
+
+img_processing('imgs/sudoku_screen.png')
