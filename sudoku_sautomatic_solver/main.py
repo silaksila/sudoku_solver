@@ -49,9 +49,10 @@ levels = [
     ]
 ]
 
-
 #####################################################################################################
 # solver algorithm
+
+
 def check(y, x, n):
     global num
 
@@ -293,7 +294,9 @@ def load_image_to_sudoku():
             parent=root, initialdir=currdir, title='Please select a img', filetypes=[('Image files', '.jpg .png')])
 
         root.destroy()
-
+        font = pygame.font.SysFont('Comic Sans MS', 30)
+        txt = font.render('Loading...', False, (0, 0, 0))
+        board.blit(txt, (550, 300))
     # process image and get sudoku board from it
     if len(path_img) > 0:
         brd = img_processing(path_img)
@@ -343,6 +346,10 @@ def solve_butt():
 
 def change_board():
     global board_num, num, useless_variable, solved, inputed
+
+    font = pygame.font.SysFont('Comic Sans MS', 30)
+    txt = font.render('Loading...', False, (0, 0, 0))
+    #####################################
     next_button = button((147, 158, 202), 750, 450, 120, 50, 'skip', r=50)
     if next_button.isOver(pygame.mouse.get_pos()):
         next_button.color = (164, 164, 164)
@@ -351,6 +358,7 @@ def change_board():
     next_button.draw(board)
 
     if next_button.isclicked():
+        board.blit(txt, (550, 300))
         time.sleep(0.5)
         if board_num + 1 > len(levels):
             board_num = 0
@@ -359,7 +367,6 @@ def change_board():
 
         # reset everything for new board
         num = levels[board_num]
-
         solve()
         useless_variable = 1
         solved = False
@@ -383,12 +390,12 @@ def display_game_window():
     board.fill((255, 255, 255))
 
     solve_butt()
-    change_board()
     drawing_play_board()
     drawing_numbers_on_board()
     input_blank()
-    game_over()
     load_image_to_sudoku()
+    change_board()
+    game_over()
 
     pygame.display.update()
 
